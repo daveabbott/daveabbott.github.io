@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="VFX, Visual Effects, Melbourne, Composite, Stop Motion, Live Action, Nuke, Houdini">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Dave Abbott</title>
+    <link rel="shortcut icon" type="image/png" href="/favicon-32x32.png">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#4b3e38">
+    <link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="./css/style.css">
+    <link rel="stylesheet" type="text/css" href="./css/lity.css">
+    <script src="./js/jquery-2.1.0.min.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <script src="./js/lazysizes.min.js" defer></script>
+    <script src="./js/lity.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Showreel -->
+        <div class="bloc bgc-white none" id="bloc-1">
+            <div class="embed-responsive embed-responsive-16by9"><iframe class="embed-responsive-item lazyload" src="img/lazyload-ph.png" data-src="https://player.vimeo.com/video/154007587?title=0&amp;byline=0&amp;portrait=0" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>
+        </div>
+        <div id="filter" class="filter">
+            <select id="typeDropdown" name="filter"></select>
+        </div>
+        <!-- Portfolio -->
+        <div id="grid">
+            <div id="work" class="cards">
+                <script language="javascript">
+                    fetch('./work.json')
+                    .then(function (response) {
+                        return response.json();
+                    })
+                    .then(function (data) {
+                        appendData(data.filter(function(x){return x.visible === true; }));
+                    })
+                    .catch(function (err) {
+                        console.log('error: ' + err);
+                    });
+
+                    function appendData(data) {
+
+                        // prepare dropdown list
+                        dropdown = $('#typeDropdown');
+                        dropdown.empty();
+                        dropdown.append('<option selected="true" disabled>Filter by Type</option>');
+                        dropdown.append('<option>show all</option>');
+                        // filter duplicates
+                        var unique = data.filter((key, i, entry) => entry.findIndex(each => each.type === key.type) === i);
+                        //unique.sort(function(a, b){ return b.type - a.type; });
+                        // populate dropdown
+                        $.each(unique, function (key, entry) {
+                            dropdown.append($('<option></option>').attr('value', entry.type).text(entry.type));
+                        })
+                        // select zero option
+                        dropdown.prop('selectedIndex', 0);
+
+                    // filtered results
+                    var EPI = data.filter(a => a.type == "episodic");
+                    var EXP = data.filter(a => a.type == "experiment");
+                    var MUS = data.filter(a => a.type == "music");
+                    var FLM = data.filter(a => a.type == "film");
+                    var SHT = data.filter(a => a.type == "short");
+                    var TVC = data.filter(a => a.type == "tvc");
+                    
+                    // var dropdownChoice = $('#typeDropdown').value;
+                    
+                    // check filters
+                    var data = data;
+
+                    // sort data by date then featured
+                    data.sort(function(a, b){ return b.id - a.id; });
+                    data.sort(function(a, b){ return b.featured - a.featured; });
+
+                    // grid fill
+                    var mainContainer = document.getElementById("work");
+                    for (var i = 0; i < data.length; i++) {
+                    var divCard = document.createElement('div');    // container for thumb and text
+                    var divThumb = document.createElement('div');   // container for thumb
+                    var divInfo = document.createElement('div');    // container for text
+                    var vClient = "";   // vars for null filters
+                    var vProject = "";  // vars for null filters
+                    var vRole = "";     // vars for null filters
+                    var vAwards = "";   // vars for null filters
+                    var vNoms = "";     // vars for null filters
+                    // card info
+                    if (data[i].client !== null) { vClient = data[i].client + ": "; }                       // filter null clients
+                    if (data[i].project !== null) { vProject = data[i].project; }                           // filter null project
+                    if (data[i].role !== null) { vRole = data[i].role; }                                    // filter null role
+                    if (data[i].awards !== null) { vAwards = "Awards: <br>" + data[i].awards; }             // filter null awards
+                    if (data[i].nominated !== null) { vNoms = "Nominations: <br>" + data[i].nominated; }    // filter null nominations
+                    var divInfoTitle = "<p class='thumb-title'>" + vClient + vProject + "</p>";             // assemble client project html
+                    var divInfoRole = "<p class='thumb-role'>" + vRole + "</p>";                            // assemble role html
+                    var divInfoAwards = "<p class='thumb-awards'>" + vAwards + "</p>";                      // assemble awards html
+                    var divInfoNominations = "<p class='thumb-awards'>" + vNoms + "</p>";                   // assemble nominations html
+                    divInfo.innerHTML = divInfoTitle + divInfoRole + divInfoAwards + divInfoNominations;    // assemble info html
+                    // thumb
+                    var divThumbHTML = "<a href='" + data[i].video + "' data-lity=''> <img src='" + data[i].thumb + "' class='lazyload'" + "style='max-width: 100%'" + "/></a>"
+                    divThumb.innerHTML = divThumbHTML;
+                    // append divs
+                    divCard.appendChild(divThumb);
+                    divCard.appendChild(divInfo);
+                    divCard.setAttribute('class', 'card');
+                    mainContainer.appendChild(divCard);
+                }
+            }
+        </script>
+    </div>
+</div>
+</div>
+</body>
+</html>
